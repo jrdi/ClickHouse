@@ -1,9 +1,66 @@
+* Vectorscan enabled
+- const pattern
 1
 1
 1
 1
 0
 1
+2
+1
+2
+0
+[1]
+[2]
+[1]
+[2]
+[]
+1
+1
 1
 1
 0
+1
+2
+1
+2
+0
+[1]
+[2]
+[1]
+[2]
+[]
+- non-const pattern
+1
+1
+1
+1
+0
+1
+2
+1
+2
+0
+[1]
+[2]
+[1]
+[2]
+[]
+1
+1
+1
+1
+0
+1
+2
+1
+2
+0
+[1]
+[2]
+[1]
+[2]
+[]
+* Vectorscan disabled
+- const pattern
+- non-const pattern

@@ -1,5 +1,7 @@
 -- Tags: no-fasttest, use-vectorscan
 
+SELECT '-- With const pattern';
+
 select 0 = multiMatchAny(materialize('mpnsguhwsitzvuleiwebwjfitmsg'), ['wbirxqoabpblrnvvmjizj', 'cfcxhuvrexyzyjsh', 'oldhtubemyuqlqbwvwwkwin', 'bumoozxdkjglzu', 'intxlfohlxmajjomw', 'dxkeghohv', 'arsvmwwkjeopnlwnan', 'ouugllgowpqtaxslcopkytbfhifaxbgt', 'hkedmjlbcrzvryaopjqdjjc', 'tbqkljywstuahzh', 'o', 'wowoclosyfcuwotmvjygzuzhrery', 'vpefjiffkhlggntcu', 'ytdixvasrorhripzfhjdmlhqksmctyycwp']) from system.numbers limit 10;
 select 0 = multiMatchAny(materialize('qjjzqexjpgkglgxpzrbqbnskq'), ['vaiatcjacmlffdzsejpdareqzy', 'xspcfzdufkmecud', 'bcvtbuqtctq', 'nkcopwbfytgemkqcfnnno', 'dylxnzuyhq', 'tno', 'scukuhufly', 'cdyquzuqlptv', 'ohluyfeksyxepezdhqmtfmgkvzsyph', 'ualzwtahvqvtijwp', 'jg', 'gwbawqlngzcknzgtmlj', 'qimvjcgbkkp', 'eaedbcgyrdvv', 'qcwrncjoewwedyyewcdkh', 'uqcvhngoqngmitjfxpznqomertqnqcveoqk', 'ydrgjiankgygpm', 'axepgap']) from system.numbers limit 10;
 select 0 = multiMatchAny(materialize('fdkmtqmxnegwvnjhghjq'), ['vynkybvdmhgeezybbdqfrukibisj', 'knazzamgjjpavwhvdkwigykh', 'peumnifrmdhhmrqqnemw', 'lmsnyvqoisinlaqobxojlwfbi', 'oqwfzs', 'dymudxxeodwjpgbibnkvr', 'vomtfsnizkplgzktqyoiw', 'yoyfuhlpgrzds', 'cefao', 'gi', 'srpgxfjwl', 'etsjusdeiwbfe', 'ikvtzdopxo', 'ljfkavrau', 'soqdhxtenfrkmeic', 'ktprjwfcelzbup', 'pcvuoddqwsaurcqdtjfnczekwni', 'agkqkqxkfbkfgyqliahsljim']) from system.numbers limit 10;
@@ -92,3 +94,106 @@ SELECT [1] = multiMatchAllIndices(materialize('/odezhda-dlya-bega/'), ['/odezhda
 SELECT [] = multiMatchAllIndices(materialize('aaaa'), ['.*aa.*aaa.*', 'aaaaaa{2}', '\(aa\){3}']);
 SELECT 'All tests above must return 1, all tests below return something.';
 SELECT arraySort(multiMatchAllIndices(arrayJoin(['aaaa', 'aaaaaa', 'bbbb', 'aaaaaaaaaaaaaa']), ['.*aa.*aaa.*', 'aaaaaa{2}', '(aa){3}']));
+
+SELECT '-- With non-const pattern';
+
+drop table if exists tab1;
+create table tab1
+  (id UInt32, haystack String, needles Array(String))
+  engine = MergeTree()
+  order by id;
+insert into tab1 values (1, 'khljxzxlpcrxpkrfybbfk', ['', 'lpc', 'rxpkrfybb', 'crxp', '', 'pkr', 'jxzxlpcrxpkrf', '', 'xzxlpcr', 'xpk', 'fyb', 'xzxlpcrxpkrfybbfk', 'k', 'lpcrxp', 'ljxzxlpcr', 'r', 'pkr', 'fk']);
+insert into tab1 values (2, 'rbrizgjbigvzfnpgmpkqxoqxvdj', ['ee', 'cohqnb', 'msol', 'yhlujcvhklnhuomy', 'ietn', 'vgmnlkcsybtokrepzrm', 'wspiryefojxysgrzsxyrluykxfnnbzdstcel', 'mxisnsivndbefqxwznimwgazuulupbaihavg', 'vpzdjvqqeizascxmzdhuq', 'pgvncohlxcqjhfkm', 'mbaypcnfapltsegquurahlsruqvipfhrhq', 'ioxjbcyyqujfveujfhnfdfokfcrlsincjbdt', 'cnvlujyowompdrqjwjx', 'wobwed', 'kdfhaoxiuifotmptcmdbk', 'leoamsnorcvtlmokdomkzuo', 'jjw', 'ogugysetxuqmvggneosbsfbonszepsatq']);
+insert into tab1 values (3, 'uymwxzyjbfegbhgswiqhinf', ['lizxzbzlwljkr', 'ukxygktlpzuyijcqeqktxenlaqi', 'onperabgbdiafsxwbvpjtyt', 'xfqgoqvhqph', 'aflmcwabtwgmajmmqelxwkaolyyhmdlc', 'yfz', 'meffuiaicvwed', 'hhzvgmifzamgftkifaeowayjrnnzw', 'nwewybtajv', 'ectiye', 'epjeiljegmqqjncubj', 'zsjgftqjrn', 'pssng', 'raqoarfhdoeujulvqmdo'])
+insert into tab1 values (4, 'omgghgnzjmecpzqmtcvw', ['fjhlzbszodmzavzg', 'gfofrnwrxprkfiokv', 'jmjiiqpgznlmyrxwewzqzbe', 'pkyrsqkltlmxr', 'crqgkgqkkyujcyoc', 'endagbcxwqhueczuasykmajfsvtcmh', 'xytmxtrnkdysuwltqomehddp', 'etmdxyyfotfyifwvbykghijvwv', 'mwqtgrncyhkfhjdg', 'iuvymofrqpp', 'pgllsdanlhzqhkstwsmzzftp', 'disjylcceufxtjdvhy']);
+insert into tab1 values (5, 'mznihnmshftvnmmhnrulizzpslq', ['nrul', 'mshftvnmmhnr', 'z', 'mhnrulizzps', 'hftvnmmhnrul', 'ihnmshftvnmmhnrulizzp', 'izz', '', 'uli', 'nihnmshftvnmmhnru', 'hnrulizzp', 'nrulizz']);
+insert into tab1 values (6, 'ruqmqrsxrbftvruvahonradau', ['uqmqrsxrbft', 'ftv', 'tvruvahonrad', 'mqrsxrbftvruvahon', 'rbftvruvah', 'qrsxrbftvru', 'o', 'ahonradau', 'a', 'ft', '', 'u', 'rsxrbftvruvahonradau', 'ruvahon', 'bftvruvahonradau', 'qrsxrbftvru', 't', 'vahonrada', 'vruvahonradau', 'onra']);
+insert into tab1 values (7, 'gpsevxtcoeexrltyzduyidmtzxf', ['exrltyzduyid', 'vxtcoeexrltyz', 'xr', 'ltyzduyidmt', 'yzduy', 'exr', 'coeexrltyzduy', 'coeexrltyzduy', 'rlty', 'rltyzduyidm', 'exrltyz', 'xtcoeexrlty', 'vxtcoeexrltyzduyidm', '', 'coeexrl', 'sevxtcoeexrltyzdu', 'dmt', '']);
+insert into tab1 values (8, 'dyhycfhzyewaikgursyxfkuv', ['sktnofpugrmyxmbizzrivmhn', 'fhlgadpoqcvktbfzncxbllvwutdawmw', 'eewzjpcgzrqmltbgmhafwlwqb', 'tpogbkyj', 'rtllntxjgkzs', 'mirbvsqexscnzglogigbujgdwjvcv', 'iktwpgjsakemewmahgqza', 'xgfvzkvqgiuoihjjnxwwpznxhz', 'nxaumpaknreklbwynvxdsmatjekdlxvklh', 'zadzwqhgfxqllihuudozxeixyokhny', 'tdqpgfpzexlkslodps', 'slztannufxaabqfcjyfquafgfhfb', 'xvjldhfuwurvkb', 'aecv', 'uycfsughpikqsbcmwvqygdyexkcykhbnau', 'jr']);
+insert into tab1 values (9, 'vbcsettndwuntnruiyclvvwoo', ['dwuntnru', '', 'ttndwuntnruiyclvv', 'ntnr', 'nruiyclvvw', 'wo', '', 'bcsettndwuntnruiycl', 'yc', 'untnruiyclvvw', 'csettndwuntnr', 'ntnruiyclvvwo']);
+insert into tab1 values (10, 'pqqnugshlczcuxhpjxjbcnro', ['dpeedqy', 'rtsc', 'jdgla', 'qkgudqjiyzvlvsj', 'xmfxawhijgxxtydbd', 'ebgzazqthb', 'wyrjhvhwzhmpybnylirrn', 'iviqbyuclayqketooztwegtkgwnsezfl', 'bhvidy', 'hijctxxweboq', 't', 'osnzfbziidteiaifgaanm']);
+insert into tab1 values (11, 'loqchlxspwuvvccucskuytr', ['', 'k', 'qchlxspwu', 'u', 'hlxspwuvv', 'wuvvccucsku', 'vcc', 'uyt', 'uvv', 'spwu', 'ytr', 'wuvvccucs', 'xspwuv', 'lxspwuvvccuc', 'spwuvvccu', 'oqchlxspwuvvccucskuy']);
+insert into tab1 values (12, 'pjjyzupzwllshlnatiujmwvaofr', ['lnatiujmwvao', '', 'zupzwllsh', 'nati', 'wllshl', 'hlnatiujmwv', 'mwvao', 'shlnat', 'ati', 'wllshlnatiujmwvao', 'wllshlnatiujmwvaofr', 'nat']);
+insert into tab1 values (13, 'iketunkleyaqaxdlocci', ['nkleyaqaxd', 'etunkleyaq', 'yaqaxdlocci', 'tunkleyaq', 'eyaqaxdlocc', 'leyaq', 'nkleyaqaxdl', 'tunkleya', 'kleyaqa', 'etunkleya', 'leyaqa', 'dlo', 'yaqa', 'leyaqaxd', 'etunkleyaq', '']);
+insert into tab1 values (14, 'drqianqtangmgbdwruvblkqd', ['wusajejyucamkyl', 'wsgibljugzrpkniliy', 'lhwqqiuafwffyersqjgjvvvfurx', 'jfokpzzxfdonelorqu', 'ccwkpcgac', 'jmyulqpndkmzbfztobwtm', 'rwrgfkccgxht', 'ggldjecrgbngkonphtcxrkcviujihidjx', 'spwweavbiokizv', 'lv', 'krb', 'vstnhvkbwlqbconaxgbfobqky', 'pvxwdc', 'thrl', 'ahsblffdveamceonqwrbeyxzccmux', 'yozji', 'oejtaxwmeovtqtz', 'zsnzznvqpxdvdxhznxrjn', 'hse', 'kcmkrccxmljzizracxwmpoaggywhdfpxkq']);
+insert into tab1 values (15, 'yasnpckniistxcejowfijjsvkdajz', ['slkpxhtsmrtvtm', 'crsbq', 'rdeshtxbfrlfwpsqojassxmvlfbzefldavmgme', 'ipetilcbpsfroefkjirquciwtxhrimbmwnlyv', 'knjpwkmdwbvdbapuyqbtsw', 'horueidziztxovqhsicnklmharuxhtgrsr', 'ofohrgpz', 'oneqnwyevbaqsonrcpmxcynflojmsnix', 'shg', 'nglqzczevgevwawdfperpeytuodjlf']);
+insert into tab1 values (16, 'ueptpscfgxhplwsueckkxs', ['ohhygchclbpcdwmftperprn', 'dvpjdqmqckekndvcerqrpkxen', 'lohhvarnmyi', 'zppd', 'qmqxgfewitsunbuhffozcpjtc', 'hsjbioisycsrawktqssjovkmltxodjgv', 'dbzuunwbkrtosyvctdujqtvaawfnvuq', 'gupbvpqthqxae', 'abjdmijaaiasnccgxttmqdsz', 'uccyumqoyqe', 'kxxliepyzlc', 'wbqcqtbyyjbqcgdbpkmzugksmcxhvr', 'piedxm', 'uncpphzoif', 'exkdankwck', 'qeitzozdrqopsergzr', 'hesgrhaftgesnzflrrtjdobxhbepjoas', 'wfpexx']);
+insert into tab1 values (17, 'ldrzgttlqaphekkkdukgngl', ['gttlqaphekkkdukgn', 'ekkkd', 'gttlqaphe', 'qaphek', 'h', 'kdu', 'he', 'phek', '', 'drzgttlqaphekkkd']);
+insert into tab1 values (18, 'ololo', ['ololo', 'ololo', 'ololo']);
+insert into tab1 values (19, 'khljxzxlpcrxpkrfybbfk', ['k']);
+insert into tab1 values (20, '', ['']);
+insert into tab1 values (21, '', ['some string']);
+insert into tab1 values (22, 'abc', ['']);
+insert into tab1 values (23, 'abc', ['']);
+insert into tab1 values (24, 'abc', ['defgh']);
+insert into tab1 values (25, 'abc', ['defg']);
+insert into tab1 values (26, 'abc', ['def']);
+insert into tab1 values (27, 'abc', ['de']);
+insert into tab1 values (28, 'abc', ['d']);
+insert into tab1 values (29, 'abc', ['b']);
+insert into tab1 values (30, 'abc', ['bc']);
+insert into tab1 values (31, 'abc', ['bcde']);
+insert into tab1 values (32, 'abc', ['bcdef']);
+insert into tab1 values (33, 'abc', ['bcdefg']);
+insert into tab1 values (34, 'abc', ['bcdefgh']);
+insert into tab1 values (35, 'abc', ['abcdefg']);
+insert into tab1 values (36, 'abc', ['abcdef']);
+insert into tab1 values (37, 'abc', ['abcde']);
+insert into tab1 values (38, 'abc', ['abcd']);
+insert into tab1 values (39, 'abc', ['abc']);
+insert into tab1 values (40, 'abc', ['ab']);
+insert into tab1 values (41, 'abc', ['a']);
+insert into tab1 values (42, 'abcd', ['c']);
+insert into tab1 values (43, 'abcd', ['cd']);
+insert into tab1 values (44, 'abcd', ['cde']);
+insert into tab1 values (45, 'abcd', ['cdef']);
+insert into tab1 values (46, 'abcd', ['cdefg']);
+insert into tab1 values (47, 'abcd', ['cdefgh']);
+insert into tab1 values (48, 'abc', ['defgh']);
+insert into tab1 values (49, 'abc', ['defg']);
+insert into tab1 values (50, 'abc', ['def']);
+insert into tab1 values (51, 'abc', ['de']);
+insert into tab1 values (52, 'abc', ['d']);
+insert into tab1 values (53, 'abc', ['...']);
+insert into tab1 values (54, 'a\nbc', ['a?bc']);
+insert into tab1 values (55, 'a\nbc', ['a.bc']);
+insert into tab1 values (56, 'a\0bc', ['a?bc']);
+insert into tab1 values (57, 'a\0bc', ['a.bc']);
+insert into tab1 values (52, 'abcdef', ['a.....']);
+insert into tab1 values (53, 'abcdef', ['a......']);
+insert into tab1 values (54, 'abcdef', ['a......', 'a.....']);
+insert into tab1 values (55, 'aaaa', ['.*aa.*aaa.*', 'aaaaaa{2}', '\(aa\){3}']);
+insert into tab1 values (56, 'abc', ['a\0d']);
+insert into tab1 values (57, '/odezhda-dlya-bega/', ['/odezhda-dlya-bega/', 'kurtki-i-vetrovki-dlya-bega', 'futbolki-i-mayki-dlya-bega']);
+
+select multiMatchAny(haystack, needles) from tab1 order by id;
+
+drop table if exists tab2;
+create table tab2
+  (id UInt32, haystack String, needles Array(String))
+  engine = MergeTree()
+  order by id;
+insert into tab2 values (1, 'gogleuedeuniangoogle', ['google', 'unian1']);
+insert into tab2 values (2, 'gogleuedeuniangoogle', ['google1', 'unian']);
+insert into tab2 values (3, 'gogleuedeuniangoogle', ['.*goo.*', '.*yan.*']);
+insert into tab2 values (4, 'vladizlvav dabe don\'t heart me no more', ['what', 'is', 'love', 'baby', 'no mo??', 'dont', 'h.rt me']);
+
+select multiMatchAnyIndex(haystack, needles) from tab2 order by id;
+
+drop table if exists tab3;
+create table tab3
+  (id UInt32, haystack String, needles Array(String))
+  engine = MergeTree()
+  order by id;
+insert into tab3 values (1, 'gogleuedeuniangoogle', ['.*goo.*', '.*yan.*']);
+insert into tab3 values (2, 'gogleuedeuniangoogle', ['.*goo.*', 'neverexisted', '.*yan.*']);
+insert into tab3 values (3, 'gogleuedeuniangoogle', ['neverexisted', 'anotherone', 'andanotherone']);
+insert into tab3 values (4, 'фабрикант', ['', 'рикан', 'а', 'f[ae]b[ei]rl', 'ф[иаэе]б[еэи][рпл]', 'афиукд', 'a[ft],th', '^ф[аиеэ]?б?[еэи]?$', 'берлик', 'fab', 'фа[беьв]+е?[рлко]']);
+insert into tab3 values (5, '/odezhda-dlya-bega/', ['/odezhda-dlya-bega/', 'kurtki-i-vetrovki-dlya-bega', 'futbolki-i-mayki-dlya-bega']);
+insert into tab3 values (6, 'aaaa', ['.*aa.*aaa.*', 'aaaaaa{2}', '\(aa\){3}']);
+
+select multiMatchAllIndices(haystack, needles) from tab3 order by id;
+
+drop table if exists tab1;
+drop table if exists tab2;
+drop table if exists tab3;
