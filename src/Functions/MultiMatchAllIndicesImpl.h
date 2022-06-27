@@ -58,15 +58,15 @@ struct MultiMatchAllIndicesImpl
     }
 
     static void vectorConstant(
-        [[maybe_unused]] const ColumnString::Chars & haystack_data,
-        [[maybe_unused]] const ColumnString::Offsets & haystack_offsets,
-        [[maybe_unused]] const Array & needles_arr,
-        [[maybe_unused]] PaddedPODArray<ResultType> & res,
-        [[maybe_unused]] PaddedPODArray<UInt64> & offsets,
-        [[maybe_unused]] std::optional<UInt32> edit_distance,
+        const ColumnString::Chars & haystack_data,
+        const ColumnString::Offsets & haystack_offsets,
+        const Array & needles_arr,
+        PaddedPODArray<ResultType> & res,
+        PaddedPODArray<UInt64> & offsets,
+        std::optional<UInt32> edit_distance,
         bool allow_hyperscan,
-        [[maybe_unused]] size_t max_hyperscan_regexp_length,
-        [[maybe_unused]] size_t max_hyperscan_regexp_total_length)
+        size_t max_hyperscan_regexp_length,
+        size_t max_hyperscan_regexp_total_length)
     {
         if (!allow_hyperscan)
             throw Exception(ErrorCodes::FUNCTION_NOT_ALLOWED, "Hyperscan functions are disabled, because setting 'allow_hyperscan' is set to 0");
@@ -121,6 +121,14 @@ struct MultiMatchAllIndicesImpl
             offset = haystack_offsets[i];
         }
 #else
+        (void)haystack_data;
+        (void)haystack_offsets;
+        (void)needles;
+        (void)res;
+        (void)offsets;
+        (void)edit_distance;
+        (void)max_hyperscan_regexp_length;
+        (void)max_hyperscan_regexp_total_length;
         throw Exception(
             "multi-search all indices is not implemented when vectorscan is off",
             ErrorCodes::NOT_IMPLEMENTED);
@@ -141,15 +149,15 @@ struct MultiMatchAllIndicesImpl
     }
 
     static void vectorVector(
-        [[maybe_unused]] const ColumnString::Chars & haystack_data,
-        [[maybe_unused]] const ColumnString::Offsets & haystack_offsets,
-        [[maybe_unused]] const ColumnArray & needles_col,
-        [[maybe_unused]] PaddedPODArray<ResultType> & res,
-        [[maybe_unused]] PaddedPODArray<UInt64> & offsets,
-        [[maybe_unused]] std::optional<UInt32> edit_distance,
+        const ColumnString::Chars & haystack_data,
+        const ColumnString::Offsets & haystack_offsets,
+        const ColumnArray & needles_col,
+        PaddedPODArray<ResultType> & res,
+        PaddedPODArray<UInt64> & offsets,
+        std::optional<UInt32> edit_distance,
         bool allow_hyperscan,
-        [[maybe_unused]] size_t max_hyperscan_regexp_length,
-        [[maybe_unused]] size_t max_hyperscan_regexp_total_length)
+        size_t max_hyperscan_regexp_length,
+        size_t max_hyperscan_regexp_total_length)
     {
         if (!allow_hyperscan)
             throw Exception(ErrorCodes::FUNCTION_NOT_ALLOWED, "Hyperscan functions are disabled, because setting 'allow_hyperscan' is set to 0");
@@ -212,6 +220,14 @@ struct MultiMatchAllIndicesImpl
             prev_haystack_offset = haystack_offsets[i];
         }
 #else
+        (void)haystack_data;
+        (void)haystack_offsets;
+        (void)needles;
+        (void)res;
+        (void)offsets;
+        (void)edit_distance;
+        (void)max_hyperscan_regexp_length;
+        (void)max_hyperscan_regexp_total_length;
         throw Exception(
             "multi-search all indices is not implemented when vectorscan is off",
             ErrorCodes::NOT_IMPLEMENTED);
