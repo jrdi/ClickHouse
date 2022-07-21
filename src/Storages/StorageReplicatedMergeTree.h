@@ -331,7 +331,16 @@ public:
     bool canUseZeroCopyReplication() const;
 private:
     std::atomic_bool are_restoring_replica {false};
-
+    bool optimizeImpl(
+        const ASTPtr &,
+        const StorageMetadataPtr &,
+        const ASTPtr & partition,
+        bool final,
+        bool deduplicate,
+        const Names & deduplicate_by_columns,
+        TableLockHolder & table_lock,
+        ContextPtr query_context,
+        bool auto_optimize_in_background);
     /// Get a sequential consistent view of current parts.
     ReplicatedMergeTreeQuorumAddedParts::PartitionIdToMaxBlock getMaxAddedBlocks() const;
 
@@ -445,6 +454,9 @@ private:
 
     /// A task that marks finished mutations as done.
     BackgroundSchedulePool::TaskHolder mutations_finalizing_task;
+
+    /// A task that optimize partitions automatically background if enabled.
+    BackgroundSchedulePool::TaskHolder auto_optimize_partition_task { nullptr };
 
     /// A thread that removes old parts, log entries, and blocks.
     ReplicatedMergeTreeCleanupThread cleanup_thread;
@@ -587,6 +599,9 @@ private:
 
     void mutationsUpdatingTask();
 
+    /** Auto optimize partitions
+     */
+    void autoOptimizePartitionTask();
     /** Clone data from another replica.
       * If replica can not be cloned throw Exception.
       */
