@@ -807,7 +807,7 @@ std::shared_ptr<MergeMutateSelectedEntry> StorageMergeTree::selectOnePartitionTo
 {
     // Select the `best partition to merge.
     std::unordered_map<String, Int32> partition_parts_sum_diff;
-    ssize_t base = time(nullptr) - getSettings()->auto_optimize_partition_after_seconds;
+    ssize_t base = time(nullptr) - getSettings()->auto_optimize_partition_older_than_seconds;
     auto data_parts = getDataPartsForInternalUsage();
     for (const auto & part : data_parts)
     {
@@ -1203,7 +1203,7 @@ bool StorageMergeTree::scheduleDataProcessingJob(BackgroundJobsAssignee & assign
         if (!merge_entry)
             mutate_entry = selectPartsToMutate(metadata_snapshot, nullptr, share_lock, lock);
 
-        if (getSettings()->auto_optimize_partition_after_seconds
+        if (getSettings()->auto_optimize_partition_older_than_seconds
             && !merge_entry && !mutate_entry
             && time_after_previous_optimize_one_partition.compareAndRestartDeferred(getSettings()->auto_optimize_partition_interval_seconds))
         {

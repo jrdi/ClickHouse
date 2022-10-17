@@ -293,7 +293,7 @@ StorageReplicatedMergeTree::StorageReplicatedMergeTree(
 
     merge_selecting_task = getContext()->getSchedulePool().createTask(
         getStorageID().getFullTableName() + " (StorageReplicatedMergeTree::mergeSelectingTask)", [this] { mergeSelectingTask(); });
-    if (getSettings()->auto_optimize_partition_after_seconds)
+    if (getSettings()->auto_optimize_partition_older_than_seconds)
         auto_optimize_partition_task = getContext()->getSchedulePool().createTask(
             getStorageID().getFullTableName() + " (StorageReplicatedMergeTree::autoOptimizePartitionTask)", [this] { autoOptimizePartitionTask(); });
 
@@ -4459,7 +4459,7 @@ SinkToStoragePtr StorageReplicatedMergeTree::write(const ASTPtr & /*query*/, con
 
 void StorageReplicatedMergeTree::autoOptimizePartitionTask()
 {
-    if (!is_leader || !getSettings()->auto_optimize_partition_after_seconds)
+    if (!is_leader || !getSettings()->auto_optimize_partition_older_than_seconds)
         return;
     auto table_lock = lockForShare(RWLockImpl::NO_QUERY, getSettings()->lock_acquire_timeout_for_background_operations);
     try
@@ -4601,7 +4601,7 @@ bool StorageReplicatedMergeTree::optimizeImpl(
         DataPartsVector data_parts = getVisibleDataPartsVector(query_context);
         std::unordered_set<String> partition_ids;
 
-        ssize_t baseline = time(nullptr) - storage_settings_ptr->auto_optimize_partition_after_seconds;
+        ssize_t baseline = time(nullptr) - storage_settings_ptr->auto_optimize_partition_older_than_seconds;
         for (const DataPartPtr & part : data_parts)
         {
             if (!auto_optimize_in_background || part->modification_time < baseline)
