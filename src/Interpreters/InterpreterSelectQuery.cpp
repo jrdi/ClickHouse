@@ -456,12 +456,12 @@ InterpreterSelectQuery::InterpreterSelectQuery(
         }
     }
 
-    if (joined_tables.tablesCount() > 1 && (!settings.parallel_replicas_custom_key.value.empty() || settings.allow_experimental_parallel_reading_from_replicas))
-    {
-        LOG_WARNING(log, "Joins are not supported with parallel replicas. Query will be executed without using them.");
-        context->setSetting("allow_experimental_parallel_reading_from_replicas", false);
-        context->setSetting("parallel_replicas_custom_key", String{""});
-    }
+    // if (joined_tables.tablesCount() > 1 && (!settings.parallel_replicas_custom_key.value.empty() || settings.allow_experimental_parallel_reading_from_replicas))
+    // {
+    //     LOG_WARNING(log, "Joins are not supported with parallel replicas. Query will be executed without using them.");
+    //     context->setSetting("allow_experimental_parallel_reading_from_replicas", false);
+    //     context->setSetting("parallel_replicas_custom_key", String{""});
+    // }
 
     /// Try to execute query without parallel replicas if we find that there is a FINAL modifier there.
     bool is_query_with_final = false;
