@@ -1440,7 +1440,7 @@ The calculation is performed relative to specific points in time:
 (*) hour intervals are special: the calculation is always performed relative to 00:00:00 (midnight) of the current day. As a result, only
     hour values between 1 and 23 are useful.
 
-If unit `week` was specified, `toStartOfInterval` assumes by default that weeks start on Monday. You can change this behavior with setting [`first_day_of_week`](../../operations/settings/settings.md/#first-day-of-week)
+If unit `week` was specified, `toStartOfInterval` assumes that weeks start on Monday by default. You can change this behavior with [`first_day_of_week`](/docs/en/operations/settings/settings.md/#first-day-of-week)
 
 **See Also**
 

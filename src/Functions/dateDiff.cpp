@@ -1,3 +1,4 @@
+
 #include <DataTypes/DataTypeDateTime.h>
 #include <DataTypes/DataTypeDateTime64.h>
 #include <DataTypes/DataTypesNumber.h>
@@ -14,6 +15,7 @@
 #include <Functions/DateTimeTransforms.h>
 #include <Functions/TransformDateTime64.h>
 
+#include <Interpreters/Context.h>
 #include <IO/WriteHelpers.h>
 
 #include <base/find_symbols.h>
@@ -41,7 +43,10 @@ class DateDiffImpl
 public:
     using ColumnDateTime64 = ColumnDecimal<DateTime64>;
 
-    explicit DateDiffImpl(const String & name_) : name(name_) {}
+    DateDiffImpl(const String & name_, FirstDayOfWeek first_day_of_week_)
+        : name(name_)
+        , first_day_of_week(first_day_of_week_)
+    {}
 
     template <typename Transform>
     void dispatchForColumns(
@@ -168,8 +173,12 @@ public:
     Int64 calculate(const TransformX & transform_x, const TransformY & transform_y, T1 x, T2 y, const DateLUTImpl & timezone_x, const DateLUTImpl & timezone_y) const
     {
         if constexpr (is_diff)
-            return static_cast<Int64>(transform_y.execute(y, timezone_y))
-                - static_cast<Int64>(transform_x.execute(x, timezone_x));
+        {
+            const UInt8 week_mode = (first_day_of_week == FirstDayOfWeek::Monday) ? 0 : 3;
+
+            return static_cast<Int64>(transform_y.execute(y, timezone_y, week_mode))
+                - static_cast<Int64>(transform_x.execute(x, timezone_x, week_mode));
+        }
         else
         {
             auto res = static_cast<Int64>(transform_y.execute(y, timezone_y))
@@ -312,6 +321,7 @@ public:
     }
 private:
     String name;
+    const FirstDayOfWeek first_day_of_week;
 };
 
 
@@ -330,7 +340,12 @@ class FunctionDateDiff : public IFunction
 {
 public:
     static constexpr auto name = is_relative ? "dateDiff" : "age";
-    static FunctionPtr create(ContextPtr) { return std::make_shared<FunctionDateDiff>(); }
+    static FunctionPtr create(ContextPtr context) { return std::make_shared<FunctionDateDiff>(context); }
+
+    explicit FunctionDateDiff(ContextPtr context)
+        : impl(name, context->getSettingsRef().first_day_of_week)
+    {
+    }
 
     String getName() const override
     {
@@ -423,7 +438,7 @@ public:
         return res;
     }
 private:
-    DateDiffImpl<is_relative> impl{name};
+    DateDiffImpl<is_relative> impl;
 };
 
 
@@ -483,7 +498,7 @@ public:
         return res;
     }
 private:
-    DateDiffImpl<true> impl{name};
+    DateDiffImpl<true> impl{name, FirstDayOfWeek::Monday};
 };
 
 }
